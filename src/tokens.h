@@ -3,27 +3,34 @@
  * A escolha dos valores constantes eh totalmente arbitraria.
  * Cada valor deve ser distinto...
  */
-#define INT 100
-#define DOUBLE 101
-#define FLOAT 102
-#define CHAR 103
-#define QUOTE 104
-#define DQUOTE 105
-#define LE 106
-#define GE 107
-#define EQ 108
-#define NE 109
-#define AND 110
-#define OR 111
-#define NOT 112
-#define IF 113
-#define THEN 114
-#define ELSE 115
-#define WHILE 116
+#define INT 900
+#define DOUBLE 901
+#define REAL 902
+#define CHAR 903
+#define QUOTE 904
+#define DQUOTE 905
+#define LE 906
+#define GE 907
+#define EQ 908
+#define NE 909
+#define AND 910
+#define OR 911
+#define NOT 912
+#define IF 913
+#define THEN 914
+#define ELSE 915
+#define FOR 916
+#define NEXT 917
+#define WHILE 918
+#define REPEAT 919
+#define UNTIL 920
+#define END 921
+#define CASE 922
 
-#define TRUE 123
-#define FALSE 124
+#define TRUE 923
+#define FALSE 924
 
-#define IDF 200
-#define INT_LIT 201
-#define F_LIT 202
+#define IDF 800
+#define CONST 801
+#define INT_LIT 802
+#define F_LIT 803
