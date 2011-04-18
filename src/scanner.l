@@ -68,7 +68,7 @@ end    { return(END); }
 case   { return(CASE); }
 
  /* complex */
-[ \n]+ { printf("BRANCO\n"); }
+[ \n\t]+ { printf("SPACE\n"); }
 [a-z_][A-Za-z#_0-9]* {
     /* lexema deve ser impresso na tela */
     printf("%s\n", yytext);
