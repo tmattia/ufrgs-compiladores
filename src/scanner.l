@@ -6,7 +6,6 @@
     #include <stdlib.h>
     #include <string.h>
 
-    /* este include eh importante... */
     #include "tokens.h"
 
     int VAL_INT;
@@ -68,15 +67,15 @@ end    { return(END); }
 case   { return(CASE); }
 
  /* complex */
-[ \n\t]+ { printf("SPACE\n"); }
+[ \n\t]+ { }
 [a-z_][A-Za-z#_0-9]* {
-    /* lexema deve ser impresso na tela */
-    printf("%s\n", yytext);
+    yylval.cadeia = (char*) malloc(strlen(yytext) + 1);
+    strcpy(yylval.cadeia, yytext);
     return(IDF);
 }
 [A-Z][A-Z_0-9]* {
-    /* lexema deve ser impresso na tela */
-    printf("%s\n", yytext);
+    yylval.cadeia = (char*) malloc(strlen(yytext) + 1);
+    strcpy(yylval.cadeia, yytext);
     return(CONST);
 }
 [0-9]+ {
@@ -84,6 +83,8 @@ case   { return(CASE); }
      * chamada VAL_INT, de tipo int
      */
     VAL_INT = atoi(yytext);
+    yylval.cadeia = (char*) malloc(strlen(yytext) + 1);
+    strcpy(yylval.cadeia, yytext);
     return(INT_LIT);
 }
 [0-9]+\.[0-9]+([eE][+-]?[0-9]+)? {
@@ -91,6 +92,8 @@ case   { return(CASE); }
      * chamada VAL_DOUBLE, de tipo double
      */
     VAL_DOUBLE = atof(yytext);
+    yylval.cadeia = (char*) malloc(strlen(yytext) + 1);
+    strcpy(yylval.cadeia, yytext);
     return(F_LIT);
 }
 
