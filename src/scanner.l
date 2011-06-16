@@ -32,6 +32,7 @@ false  { return(FALSE); }
 "+"    { return('+'); }
 "-"    { return('-'); }
 "/"    { return('/'); }
+"%"    { return('%'); }
 ","    { return(','); }
 ";"    { return(';'); }
 ":"    { return(':'); }
@@ -68,7 +69,7 @@ case   { return(CASE); }
 
  /* complex */
 [ \n\t]+ { }
-[a-z_][A-Za-z#_0-9]* {
+[a-z_][a-zA-Z#_0-9]* {
     yylval.cadeia = (char*) malloc(strlen(yytext) + 1);
     strcpy(yylval.cadeia, yytext);
     return(IDF);
@@ -118,7 +119,7 @@ case   { return(CASE); }
  */
 
 extern FILE *yyin;
-int main(int argc, char* argv[]) {
+int _main(int argc, char* argv[]) {
     int token;
     if (argc != 2) {
         printf("uso: %s <input_file>. Try again!\n", argv[0]);

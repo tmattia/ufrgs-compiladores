@@ -246,7 +246,13 @@ expr: expr '+' expr {
             children[0] = create_leaf(0, open_par_term, NULL, NULL);
             children[1] = $2;
             children[2] = create_leaf(0, close_par_term, NULL, NULL);
-            $$ = create_node(0, div_node, NULL, NULL, 3, children);
+            $$ = create_node(0, expr_node, NULL, NULL, 3, children);
+        }
+    | expr '%' expr {
+            Node** children = (Node**) malloc(sizeof(Node*) * 2);
+            children[0] = $1;
+            children[1] = $3;
+            $$ = create_node(0, mod_node, NULL, NULL, 2, children);
         }
     | INT_LIT  { $$ = create_leaf(0, int_node, $1, NULL); } 
     | F_LIT    { $$ = create_leaf(0, float_node, $1, NULL); }
@@ -274,7 +280,7 @@ enunciado: expr { $$ = $1; }
                  Node** children = (Node**) malloc(sizeof(Node*) * 2);
                  children[0] = $3;
                  children[1] = $6;
-                 $$ = create_node(0, while_node, NULL, NULL, 3, children);
+                 $$ = create_node(0, while_node, NULL, NULL, 2, children);
              }
          ;
 
@@ -347,6 +353,28 @@ char* progname;
 int lineno;
 extern FILE* yyin;
 
+void echo_node(Node* node, int nchildren, int level)
+{
+	int i, j;
+	
+	for (j = 0; j < level; j++) printf("\t");
+	printf("%d\n", node->type);
+	
+	for (i = 0; i < nchildren; i++) {
+		if ((node->children[i]->type >= 300 && node->children[i]->type <= 304)
+				|| (node->children[i]->type >= 401 && node->children[i]->type <= 408)) {
+			for (j = 0; j <= level; j++) printf("\t");
+			if (node->children[i]->lexeme == NULL) {
+				printf("%d\n", node->children[i]->type);
+			} else {
+				printf("%d (%s)\n", node->children[i]->type, node->children[i]->lexeme);	
+			}
+		} else {
+			echo_node(node->children[i], node->children[i]->nb_children, level + 1);
+		}
+	}
+}
+
 int main(int argc, char* argv[]) 
 {
    if (argc != 2) {
@@ -360,17 +388,15 @@ int main(int argc, char* argv[])
      exit(-1);
    }
 
-progname = argv[0];
+	progname = argv[0];
 
-if (!yyparse())
-      printf("OKAY.\n");
-   else
-      printf("ERROR.\n");
-   if (syntax_tree->type == int_node)
-     printf("A AST se limita a uma folha rotulada por: %s\n",
-        syntax_tree->lexeme);
-   else
-     printf("Something got wrong in the AST.\n");
+	if (!yyparse()) {
+	   printf("OKAY.\n");
+       echo_node(syntax_tree, syntax_tree->nb_children, 0);
+	  
+	} else {
+	      printf("ERROR.\n");
+	}
    return(0);
 }
 

@@ -54,6 +54,7 @@ typedef int Node_type;
 #define list_index_node 340
 #define list_access_node 341
 #define end_node       342
+#define expr_node      343
 
 #define open_par_term   401
 #define close_par_term  402
