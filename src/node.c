@@ -31,7 +31,7 @@ void notify_error(int tipo)
     exit(-1);
 }
 Node* create_node(int nl, Node_type t, char* lex, 
-                  void* att, int nbc, Node** children) {
+                  struct _attr* att, int nbc, Node** children) {
     int i; /*auxiliar para laço*/
     /*verifica se o número de filhos está dentro do permitido*/
     if((nbc < 0) || (nbc > MAX_CHILDREN_NUMBER))
@@ -44,7 +44,7 @@ Node* create_node(int nl, Node_type t, char* lex,
     return novo;
 }
 
-Node* create_leaf(int nl, Node_type t, char* lex, void* att) {
+Node* create_leaf(int nl, Node_type t, char* lex, struct _attr* att) {
     /*verifica o tipo*/
     if((t < 299) || (t > 500))
         notify_error(OLARG);

@@ -6,7 +6,7 @@
 # das compilacoes com o flex e o yacc (regras abaixo), e de symbol_table.c
 # que eh usado no scanner.
 pico: lex.yy.c y.tab.c node.c
-	gcc -o pico  lex.yy.c node.c y.tab.c -ll
+	gcc -o pico  lex.yy.c attr.h node.c lista.c symbol_table.c y.tab.c -ll
 
 # Compilacao com o (f)lex do analisador lexical. Le os tokens a serem
 # retornados em 'tokens.h'

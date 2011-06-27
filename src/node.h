@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include "erros.h"
+#include "attr.h"
 
 typedef int Node_type;
 
@@ -77,7 +78,7 @@ typedef struct _node {
    char* lexeme;   /**< irrelevante por enquanto. */
 
    Node_type type; /**< Um dos valores definidos acima pelos # defines. */
-   void* attribute;/**< Qualquer coisa por enquanto. */
+   struct _attr *attribute;/**< Qualquer coisa por enquanto. */
    /* Fim das informacoes armazenadas em cada no.
     * A seguir, completar essa estrutura de dados com o necessário para
     * a implementacao dos metodos especificados.
@@ -101,7 +102,7 @@ extern Node * syntax_tree;
  * @return a (pointer on a) new Node.
  */
 Node* create_node(int nl, Node_type t, char* lexema, 
-                  void* att, int nbc, Node** children) ;
+                  struct _attr* att, int nbc, Node** children) ;
 
 /** Constructor of a leaf Node (without any child).
  * @param nl : line number of the instruction that originates the node.
@@ -111,7 +112,7 @@ Node* create_node(int nl, Node_type t, char* lexema,
  * @param att : a semantica attribute (can be NULL for now).
  * @return a (pointer) on a new Node.
  */
-Node* create_leaf(int nl, Node_type t, char* lexema, void* att) ;
+Node* create_leaf(int nl, Node_type t, char* lexema, struct _attr* att) ;
 
 /** accessor to the number of children of a Node.
  *  Must return en error if 'n' is NULL.
