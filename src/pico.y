@@ -147,11 +147,30 @@ tipounico: INT {
                  struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                  att->local = NULL;
                  att->code = NULL;
+                 att->type = int_type;
                  $$ = create_leaf(0, int_node, NULL, att);
              }
-         | DOUBLE { $$ = create_leaf(0, float_node, NULL, NULL); }
-         | FLOAT { $$ = create_leaf(0, float_node, NULL, NULL); }
-         | CHAR { $$ = create_leaf(0, str_node, NULL, NULL); }
+         | DOUBLE {
+                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
+                 att->local = NULL;
+                 att->code = NULL;
+                 att->type = double_type;
+                 $$ = create_leaf(0, float_node, NULL, att);
+             }
+         | FLOAT {
+                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
+                 att->local = NULL;
+                 att->code = NULL;
+                 att->type = float_type;
+                 $$ = create_leaf(0, float_node, NULL, att);
+             }
+         | CHAR {
+                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
+                 att->local = NULL;
+                 att->code = NULL;
+                 att->type = char_type;
+                 $$ = create_leaf(0, float_node, NULL, att);
+             }
          ;
 
 tipolista: INT '[' listadupla ']' {
@@ -474,16 +493,23 @@ void echo_node(Node* node, int nchildren, int level)
 	
 	for (j = 0; j < level; j++) printf("\t");
 	printf("%d", node->type);
-    printf(" {local: %s}\n", node->attribute->local);
+    printf(" {local: %s; tipo: %d}\n", node->attribute->local, node->attribute->type);
 	
     for (i = 0; i < nchildren; i++) {
         if ((node->children[i]->type >= 300 && node->children[i]->type <= 304)
                 || (node->children[i]->type >= 401 && node->children[i]->type <= 408)) {
             for (j = 0; j <= level; j++) printf("\t");
             if (node->children[i]->lexeme == NULL) {
-                printf("%d\n", node->children[i]->type);
+                printf("%d {local: %s; tipo: %d}\n",
+                    node->children[i]->type,
+                    node->children[i]->attribute->local,
+                    node->children[i]->attribute->type);
             } else {
-                printf("%d (%s) {local: %s}\n", node->children[i]->type, node->children[i]->lexeme, node->children[i]->attribute->local);
+                printf("%d (%s) {local: %s; tipo: %d}\n",
+                    node->children[i]->type,
+                    node->children[i]->lexeme,
+                    node->children[i]->attribute->local,
+                    node->children[i]->attribute->type);
             }
         } else {
 			echo_node(node->children[i], node->children[i]->nb_children, level + 1);
