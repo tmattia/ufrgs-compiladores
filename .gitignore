@@ -2,3 +2,5 @@ src/html
 src/latex
 src/pico
 src/lex.yy.c
+src/y.tab.c
+.DS_Store
