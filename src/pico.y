@@ -8,7 +8,7 @@
   #include <string.h>
   #include "node.h"
 
-
+char * novo_tmp();
 
 %}
 
@@ -16,6 +16,7 @@
     char* cadeia;
     struct _node * no;
 }
+
 
 
 /*Faltava declarar os tipos dos tokens para o yacc conseguir converter
@@ -312,7 +313,7 @@ expr: expr '+' expr {
             children[0] = $1;
             children[1] = $3;
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
-            att->local = NULL;
+            att->local = novo_tmp();
             att->code = NULL;
             $$ = create_node(0, mult_node, NULL, att, 2, children);
         }
@@ -486,6 +487,13 @@ expbool: TRUE { $$ = create_leaf(0, true_node, NULL, NULL); }
 char* progname;
 int lineno;
 extern FILE* yyin;
+int cont = 0;
+
+char * novo_tmp(){
+	char * nome = (char*)malloc(sizeof(char)*256);
+	sprintf(nome,"tmp%d", cont++);
+	return nome;
+}
 
 void echo_node(Node* node, int nchildren, int level)
 {
