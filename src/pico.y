@@ -7,6 +7,7 @@
   #include <stdlib.h>
   #include <string.h>
   #include "node.h"
+  #include "lista.h"
 
 char * novo_tmp();
 
@@ -88,7 +89,7 @@ code: declaracoes acoes {
             children[1] = $2;
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
             att->local = NULL;
-            att->code = NULL;
+            att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
             $$ = create_node(0, program_node, NULL, att, 2, children);
             syntax_tree = $$;
         }
@@ -102,7 +103,7 @@ declaracoes: declaracao ';' { $$ = $1; }
                     children[1] = $2;
                     struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                     att->local = NULL;
-                    att->code = NULL;
+                    att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                     $$ = create_node(0, decl_node, NULL, att, 2, children);
                 }
            ;
@@ -113,7 +114,7 @@ declaracao: listadeclaracao ':' tipo {
                   children[1] = $3;
                   struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                   att->local = NULL;
-                  att->code = NULL;
+                  att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                   $$ = create_node(0, decl_node, NULL, att, 2, children);
               }
           ;
@@ -122,7 +123,7 @@ listadeclaracao: IDF {
                        struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                        att->local = (char*) malloc((sizeof(char) * strlen($1)) + 1);
                        strcpy(att->local, $1);
-                       att->code = NULL;
+                       att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                        $$ = create_leaf(0, idf_node, $1, att);
                    }
                | IDF ',' listadeclaracao {
@@ -135,7 +136,7 @@ listadeclaracao: IDF {
                         children[1] = $3;
                         struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                         att->local = NULL;
-                        att->code = NULL;
+                        att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                         $$ = create_node(0, decl_list_node, NULL, att, 2, children);
                     }
                ;
@@ -147,28 +148,28 @@ tipo: tipounico { $$ = $1; }
 tipounico: INT {
                  struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                  att->local = NULL;
-                 att->code = NULL;
+                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                  att->type = int_type;
                  $$ = create_leaf(0, int_node, NULL, att);
              }
          | DOUBLE {
                  struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                  att->local = NULL;
-                 att->code = NULL;
+                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                  att->type = double_type;
                  $$ = create_leaf(0, float_node, NULL, att);
              }
          | FLOAT {
                  struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                  att->local = NULL;
-                 att->code = NULL;
+                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                  att->type = float_type;
                  $$ = create_leaf(0, float_node, NULL, att);
              }
          | CHAR {
                  struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                  att->local = NULL;
-                 att->code = NULL;
+                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                  att->type = char_type;
                  $$ = create_leaf(0, float_node, NULL, att);
              }
@@ -183,7 +184,7 @@ tipolista: INT '[' listadupla ']' {
                  children[1] = $3;
                  struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                  att->local = NULL;
-                 att->code = NULL;
+                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                  $$ = create_node(0, list_node, NULL, att, 2, children);
              }
          | DOUBLE '[' listadupla ']' {
@@ -192,7 +193,7 @@ tipolista: INT '[' listadupla ']' {
                  children[1] = $3;
                  struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                  att->local = NULL;
-                 att->code = NULL;
+                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                  $$ = create_node(0, list_node, NULL, att, 2, children);
              }
          | FLOAT '[' listadupla ']' {
@@ -201,7 +202,7 @@ tipolista: INT '[' listadupla ']' {
                  children[1] = $3;
                  struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                  att->local = NULL;
-                 att->code = NULL;
+                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                  $$ = create_node(0, list_node, NULL, att, 2, children);
              }
          | CHAR '[' listadupla ']' {
@@ -210,7 +211,7 @@ tipolista: INT '[' listadupla ']' {
                  children[1] = $3;
                  struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                  att->local = NULL;
-                 att->code = NULL;
+                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                  $$ = create_node(0, list_node, NULL, att, 2, children);
              }
          ;
@@ -221,7 +222,7 @@ listadupla: INT_LIT ':' INT_LIT {
                   children[1] = create_leaf(0, int_node, $3, NULL);
                   struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                   att->local = NULL;
-                  att->code = NULL;
+                  att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                   $$ = create_node(0, list_size_node, NULL, att, 2, children);
               }
           | INT_LIT ':' INT_LIT ',' listadupla {
@@ -231,7 +232,7 @@ listadupla: INT_LIT ':' INT_LIT {
                   children[2] = $5;
                   struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                   att->local = NULL;
-                  att->code = NULL;
+                  att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                   $$ = create_node(0, list_size_node, NULL, att, 3, children);
               }
           ;
@@ -243,7 +244,7 @@ acoes: comando ';'  { $$ = $1; }
              children[1] = $3;
              struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
              att->local = NULL;
-             att->code = NULL;
+             att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
              $$ = create_node(0, program_node, NULL, att, 2, children);
          }
      ;
@@ -254,7 +255,7 @@ comando: lvalue '=' expr {
                 children[1] = $3;
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
-                att->code = NULL;
+                att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                 $$ = create_node(0, attr_node, NULL, att, 2, children);
             }
        | enunciado { $$ = $1; }
@@ -264,7 +265,7 @@ lvalue: IDF {
               struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
               att->local = (char*) malloc((sizeof(char) * strlen($1)) + 1);
               strcpy(att->local, $1);
-              att->code = NULL;
+              att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
               $$ = create_leaf(0, idf_node, $1, att);
           }
       | IDF '[' listaexpr ']' {
@@ -273,7 +274,7 @@ lvalue: IDF {
               children[1] = $3;
               struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
               att->local = NULL;
-              att->code = NULL;
+              att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
               $$ = create_node(0, list_access_node, NULL, att, 2, children);
           }
       ;
@@ -285,7 +286,7 @@ listaexpr: expr { $$ = $1; }
                  children[1] = $3;
                  struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                  att->local = NULL;
-                 att->code = NULL;
+                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                  $$ = create_node(0, list_index_node, NULL, att, 2, children);
              }
          ;
@@ -294,36 +295,68 @@ expr: expr '+' expr {
             Node** children = (Node**) malloc(sizeof(Node*) * 2);
             children[0] = $1;
             children[1] = $3;
+
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
-            att->local = NULL;
-            att->code = NULL;
+			att->local = novo_tmp();
+
+			struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
+			code->inst = create_inst_tac(att->local, children[0]->attribute->local, "+", children[1]->attribute->local);
+			att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+			cat_tac(att->code, children[0]->attribute->code);
+			cat_tac(att->code, children[1]->attribute->code);
+			append_inst_tac(att->code, code->inst);
+			
             $$ = create_node(0, plus_node, NULL, att, 2, children);
         }
     | expr '-' expr {
             Node** children = (Node**) malloc(sizeof(Node*) * 2);
             children[0] = $1;
             children[1] = $3;
+
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
-            att->local = NULL;
-            att->code = NULL;
+			att->local = novo_tmp();
+
+			struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
+			code->inst = create_inst_tac(att->local, children[0]->attribute->local, "-", children[1]->attribute->local);
+			att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+			cat_tac(att->code, children[0]->attribute->code);
+			cat_tac(att->code, children[1]->attribute->code);
+			append_inst_tac(att->code, code->inst);
+			
             $$ = create_node(0, minus_node, NULL, att, 2, children);
         }
     | expr '*' expr {
             Node** children = (Node**) malloc(sizeof(Node*) * 2);
             children[0] = $1;
             children[1] = $3;
+
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
-            att->local = novo_tmp();
-            att->code = NULL;
+			att->local = novo_tmp();
+
+			struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
+			code->inst = create_inst_tac(att->local, children[0]->attribute->local, "*", children[1]->attribute->local);
+			att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+			cat_tac(att->code, children[0]->attribute->code);
+			cat_tac(att->code, children[1]->attribute->code);
+			append_inst_tac(att->code, code->inst);
+
             $$ = create_node(0, mult_node, NULL, att, 2, children);
         }
     | expr '/' expr {
             Node** children = (Node**) malloc(sizeof(Node*) * 2);
             children[0] = $1;
             children[1] = $3;
+
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
-            att->local = NULL;
-            att->code = NULL;
+			att->local = novo_tmp();
+
+			struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
+			code->inst = create_inst_tac(att->local, children[0]->attribute->local, "/", children[1]->attribute->local);
+			att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+			cat_tac(att->code, children[0]->attribute->code);
+			cat_tac(att->code, children[1]->attribute->code);
+			append_inst_tac(att->code, code->inst);
+			
             $$ = create_node(0, div_node, NULL, att, 2, children);
         }
     | '(' expr ')' { $$ = $2; }
@@ -331,23 +364,31 @@ expr: expr '+' expr {
             Node** children = (Node**) malloc(sizeof(Node*) * 2);
             children[0] = $1;
             children[1] = $3;
+
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
-            att->local = NULL;
-            att->code = NULL;
+			att->local = novo_tmp();
+
+			struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
+			code->inst = create_inst_tac(att->local, children[0]->attribute->local, "%", children[1]->attribute->local);
+			att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+			cat_tac(att->code, children[0]->attribute->code);
+			cat_tac(att->code, children[1]->attribute->code);
+			append_inst_tac(att->code, code->inst);
+			
             $$ = create_node(0, mod_node, NULL, att, 2, children);
         }
     | INT_LIT  {
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
             att->local = (char*) malloc((sizeof(char) * strlen($1)) + 1);
             strcpy(att->local, $1);
-            att->code = NULL;
+            att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
             $$ = create_leaf(0, int_node, $1, att);
         }
     | F_LIT    {
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
             att->local = (char*) malloc((sizeof(char) * strlen($1)) + 1);
             strcpy(att->local, $1);
-            att->code = NULL;
+            att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
             $$ = create_leaf(0, float_node, $1, att);
         }
     | lvalue { $$ = $1; }
@@ -360,7 +401,7 @@ chamaproc: IDF '(' listaexpr ')' {
                  children[1] = $3;
                  struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                  att->local = NULL;
-                 att->code = NULL;
+                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                  $$ = create_node(0, proc_node, NULL, att, 2, children);
              }
          ;
@@ -373,7 +414,7 @@ enunciado: expr { $$ = $1; }
                  children[2] = $7;
                  struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                  att->local = NULL;
-                 att->code = NULL;
+                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                  $$ = create_node(0, cond_node, NULL, att, 3, children);
              }
          | WHILE '(' expbool ')' '{' acoes '}' {
@@ -382,7 +423,7 @@ enunciado: expr { $$ = $1; }
                  children[1] = $6;
                  struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                  att->local = NULL;
-                 att->code = NULL;
+                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                  $$ = create_node(0, while_node, NULL, att, 2, children);
              }
          ;
@@ -390,7 +431,7 @@ enunciado: expr { $$ = $1; }
 fiminstcontrole: END {
                        struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                        att->local = NULL;
-                       att->code = NULL;
+                       att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                        $$ = create_leaf(0, empty_node, NULL, att);
                    }
                | ELSE acoes END { $$ = $2; }
@@ -405,7 +446,7 @@ expbool: TRUE { $$ = create_leaf(0, true_node, NULL, NULL); }
                 children[1] = $3;
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
-                att->code = NULL;
+                att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                 $$ = create_node(0, and_node, NULL, att, 2, children);
             }
        | expbool OR expbool {
@@ -414,7 +455,7 @@ expbool: TRUE { $$ = create_leaf(0, true_node, NULL, NULL); }
                 children[1] = $3;
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
-                att->code = NULL;
+                att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                 $$ = create_node(0, or_node, NULL, att, 2, children);
             }
        | NOT expbool {
@@ -422,7 +463,7 @@ expbool: TRUE { $$ = create_leaf(0, true_node, NULL, NULL); }
                 children[0] = $2;
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
-                att->code = NULL;
+                att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                 $$ = create_node(0, not_node, NULL, att, 1, children);
             }
        | expr '>' expr {
@@ -431,7 +472,7 @@ expbool: TRUE { $$ = create_leaf(0, true_node, NULL, NULL); }
                 children[1] = $3;
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
-                att->code = NULL;
+                att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                 $$ = create_node(0, sup_node, NULL, att, 2, children);
             }
        | expr '<' expr {
@@ -440,7 +481,7 @@ expbool: TRUE { $$ = create_leaf(0, true_node, NULL, NULL); }
                 children[1] = $3;
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
-                att->code = NULL;
+                att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                 $$ = create_node(0, inf_node, NULL, att, 2, children);
             }
        | expr LE expr {
@@ -449,7 +490,7 @@ expbool: TRUE { $$ = create_leaf(0, true_node, NULL, NULL); }
                 children[1] = $3;
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
-                att->code = NULL;
+                att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                 $$ = create_node(0, inf_eq_node, NULL, att, 2, children);
             }
        | expr GE expr {
@@ -458,7 +499,7 @@ expbool: TRUE { $$ = create_leaf(0, true_node, NULL, NULL); }
                 children[1] = $3;
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
-                att->code = NULL;
+                att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                 $$ = create_node(0, sup_eq_node, NULL, att, 2, children);
             }
        | expr EQ expr {
@@ -467,7 +508,7 @@ expbool: TRUE { $$ = create_leaf(0, true_node, NULL, NULL); }
                 children[1] = $3;
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
-                att->code = NULL;
+                att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                 $$ = create_node(0, eq_node, NULL, att, 2, children);
             }
        | expr NE expr {
@@ -476,7 +517,7 @@ expbool: TRUE { $$ = create_leaf(0, true_node, NULL, NULL); }
                 children[1] = $3;
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
-                att->code = NULL;
+                att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                 $$ = create_node(0, neq_node, NULL, att, 2, children);
             }
        ;

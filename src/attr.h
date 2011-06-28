@@ -9,7 +9,7 @@
 
 struct _attr {
     char* local;
-    struct tac* code;
+    struct node_tac** code;
     int type;
 } _attr;
 
