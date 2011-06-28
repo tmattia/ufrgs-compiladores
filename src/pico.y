@@ -8,8 +8,15 @@
   #include <string.h>
   #include "node.h"
   #include "lista.h"
+  #include "symbol_table.h"
 
 char * novo_tmp();
+
+entry_t* entry_create(char* name, int type);
+int entry_size(int entry_type);
+int entry_desloc(int entry_type);
+
+symbol_t *symbol_table;
 
 %}
 
@@ -116,7 +123,25 @@ declaracao: listadeclaracao ':' tipo {
                   att->local = NULL;
                   att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                   $$ = create_node(0, decl_node, NULL, att, 2, children);
-                  // TODO inserir na tabela de simbolos
+
+                  Node* cur = children[0];
+                  while (1) {
+                      if (cur->type == idf_node) {
+                          // listadeclaracao is a leaf, so we insert it into
+                          // the symbol table
+                          entry_t *entry = entry_create(cur->attribute->local, children[1]->attribute->type);
+                          insert(symbol_table, entry);
+                          break;
+                      } else {
+                          // listadeclaracao is a node with two children: a leaf
+                          // and another listadeclaracao, so we insert the leaf
+                          // into the symbol table and keep searching into the
+                          // other listadeclaracao
+                          entry_t *entry = entry_create(cur->children[0]->attribute->local, children[1]->attribute->type);
+                          insert(symbol_table, entry);
+                          cur = cur->children[1];
+                      }
+                  }
               }
           ;
 
@@ -539,12 +564,52 @@ expbool: TRUE { $$ = create_leaf(0, true_node, NULL, NULL); }
 char* progname;
 int lineno;
 extern FILE* yyin;
-int cont = 0;
 
-char * novo_tmp(){
+int cont = 0;
+char * novo_tmp()
+{
     char * nome = (char*)malloc(sizeof(char)*256);
     sprintf(nome,"tmp%d", cont++);
     return nome;
+}
+
+
+entry_t* entry_create(char* name, int type)
+{
+    entry_t *entry = (entry_t*) malloc(sizeof(entry_t));
+    entry->name = (char*) malloc(sizeof(char) * 256);
+    strcpy(entry->name, name);
+    entry->type = type;
+    entry->size = entry_size(type);
+    entry->desloc = entry_desloc(type);
+    return entry;
+}
+
+int entry_size(int entry_type)
+{
+    int size;
+    switch (entry_type) {
+        case int_type:
+            size = 4;
+            break;
+        case float_type:
+        case double_type:
+            size = 8;
+            break;
+        case char_type:
+            size = 4;
+            break;
+        default:
+            size = -1;
+    }
+    return size;
+}
+
+int desloc = 0;
+int entry_desloc(int entry_type)
+{
+    desloc += entry_size(entry_type);
+    return desloc;
 }
 
 void echo_node(Node* node, int nchildren, int level)
@@ -589,6 +654,9 @@ int main(int argc, char* argv[])
         exit(-1);
     }
 
+    symbol_table = (symbol_t*) malloc(sizeof(symbol_t));
+    init_table(symbol_table);
+
     progname = argv[0];
 
     if (!yyparse()) {
@@ -597,6 +665,7 @@ int main(int argc, char* argv[])
     } else {
         printf("ERROR.\n");
     }
+
     return(0);
 }
 
