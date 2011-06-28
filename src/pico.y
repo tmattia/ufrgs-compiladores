@@ -116,6 +116,7 @@ declaracao: listadeclaracao ':' tipo {
                   att->local = NULL;
                   att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                   $$ = create_node(0, decl_node, NULL, att, 2, children);
+                  // TODO inserir na tabela de simbolos
               }
           ;
 
@@ -253,9 +254,17 @@ comando: lvalue '=' expr {
                 Node** children = (Node**) malloc(sizeof(Node*) * 2);
                 children[0] = $1;
                 children[1] = $3;
+
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
+
+                struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
+                code->inst = create_inst_tac(children[0]->attribute->local, children[1]->attribute->local, "", "");
                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+                cat_tac(att->code, children[1]->attribute->code);
+                append_inst_tac(att->code, code->inst);
+                // TODO substituir nomes das variaveis por endereco da memoria/deslocamento (precisa olhar na symbol_table)
+
                 $$ = create_node(0, attr_node, NULL, att, 2, children);
             }
        | enunciado { $$ = $1; }
@@ -297,15 +306,15 @@ expr: expr '+' expr {
             children[1] = $3;
 
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
-			att->local = novo_tmp();
+            att->local = novo_tmp();
 
-			struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
-			code->inst = create_inst_tac(att->local, children[0]->attribute->local, "+", children[1]->attribute->local);
-			att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
-			cat_tac(att->code, children[0]->attribute->code);
-			cat_tac(att->code, children[1]->attribute->code);
-			append_inst_tac(att->code, code->inst);
-			
+            struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
+            code->inst = create_inst_tac(att->local, children[0]->attribute->local, "+", children[1]->attribute->local);
+            att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+            cat_tac(att->code, children[0]->attribute->code);
+            cat_tac(att->code, children[1]->attribute->code);
+            append_inst_tac(att->code, code->inst);
+            
             $$ = create_node(0, plus_node, NULL, att, 2, children);
         }
     | expr '-' expr {
@@ -314,15 +323,15 @@ expr: expr '+' expr {
             children[1] = $3;
 
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
-			att->local = novo_tmp();
+            att->local = novo_tmp();
 
-			struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
-			code->inst = create_inst_tac(att->local, children[0]->attribute->local, "-", children[1]->attribute->local);
-			att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
-			cat_tac(att->code, children[0]->attribute->code);
-			cat_tac(att->code, children[1]->attribute->code);
-			append_inst_tac(att->code, code->inst);
-			
+            struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
+            code->inst = create_inst_tac(att->local, children[0]->attribute->local, "-", children[1]->attribute->local);
+            att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+            cat_tac(att->code, children[0]->attribute->code);
+            cat_tac(att->code, children[1]->attribute->code);
+            append_inst_tac(att->code, code->inst);
+            
             $$ = create_node(0, minus_node, NULL, att, 2, children);
         }
     | expr '*' expr {
@@ -331,14 +340,14 @@ expr: expr '+' expr {
             children[1] = $3;
 
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
-			att->local = novo_tmp();
+            att->local = novo_tmp();
 
-			struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
-			code->inst = create_inst_tac(att->local, children[0]->attribute->local, "*", children[1]->attribute->local);
-			att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
-			cat_tac(att->code, children[0]->attribute->code);
-			cat_tac(att->code, children[1]->attribute->code);
-			append_inst_tac(att->code, code->inst);
+            struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
+            code->inst = create_inst_tac(att->local, children[0]->attribute->local, "*", children[1]->attribute->local);
+            att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+            cat_tac(att->code, children[0]->attribute->code);
+            cat_tac(att->code, children[1]->attribute->code);
+            append_inst_tac(att->code, code->inst);
 
             $$ = create_node(0, mult_node, NULL, att, 2, children);
         }
@@ -348,15 +357,15 @@ expr: expr '+' expr {
             children[1] = $3;
 
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
-			att->local = novo_tmp();
+            att->local = novo_tmp();
 
-			struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
-			code->inst = create_inst_tac(att->local, children[0]->attribute->local, "/", children[1]->attribute->local);
-			att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
-			cat_tac(att->code, children[0]->attribute->code);
-			cat_tac(att->code, children[1]->attribute->code);
-			append_inst_tac(att->code, code->inst);
-			
+            struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
+            code->inst = create_inst_tac(att->local, children[0]->attribute->local, "/", children[1]->attribute->local);
+            att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+            cat_tac(att->code, children[0]->attribute->code);
+            cat_tac(att->code, children[1]->attribute->code);
+            append_inst_tac(att->code, code->inst);
+            
             $$ = create_node(0, div_node, NULL, att, 2, children);
         }
     | '(' expr ')' { $$ = $2; }
@@ -366,15 +375,15 @@ expr: expr '+' expr {
             children[1] = $3;
 
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
-			att->local = novo_tmp();
+            att->local = novo_tmp();
 
-			struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
-			code->inst = create_inst_tac(att->local, children[0]->attribute->local, "%", children[1]->attribute->local);
-			att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
-			cat_tac(att->code, children[0]->attribute->code);
-			cat_tac(att->code, children[1]->attribute->code);
-			append_inst_tac(att->code, code->inst);
-			
+            struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
+            code->inst = create_inst_tac(att->local, children[0]->attribute->local, "%", children[1]->attribute->local);
+            att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+            cat_tac(att->code, children[0]->attribute->code);
+            cat_tac(att->code, children[1]->attribute->code);
+            append_inst_tac(att->code, code->inst);
+            
             $$ = create_node(0, mod_node, NULL, att, 2, children);
         }
     | INT_LIT  {
@@ -416,6 +425,7 @@ enunciado: expr { $$ = $1; }
                  att->local = NULL;
                  att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                  $$ = create_node(0, cond_node, NULL, att, 3, children);
+                 // TODO calcular recursivamente atributos true/false dos filhos
              }
          | WHILE '(' expbool ')' '{' acoes '}' {
                  Node** children = (Node**) malloc(sizeof(Node*) * 2);
@@ -425,6 +435,7 @@ enunciado: expr { $$ = $1; }
                  att->local = NULL;
                  att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                  $$ = create_node(0, while_node, NULL, att, 2, children);
+                 // TODO calcular recursivamente atributos true/false dos filhos
              }
          ;
 
@@ -531,19 +542,19 @@ extern FILE* yyin;
 int cont = 0;
 
 char * novo_tmp(){
-	char * nome = (char*)malloc(sizeof(char)*256);
-	sprintf(nome,"tmp%d", cont++);
-	return nome;
+    char * nome = (char*)malloc(sizeof(char)*256);
+    sprintf(nome,"tmp%d", cont++);
+    return nome;
 }
 
 void echo_node(Node* node, int nchildren, int level)
 {
-	int i, j;
-	
-	for (j = 0; j < level; j++) printf("\t");
-	printf("%d", node->type);
+    int i, j;
+    
+    for (j = 0; j < level; j++) printf("\t");
+    printf("%d", node->type);
     printf(" {local: %s; tipo: %d}\n", node->attribute->local, node->attribute->type);
-	
+    
     for (i = 0; i < nchildren; i++) {
         if ((node->children[i]->type >= 300 && node->children[i]->type <= 304)
                 || (node->children[i]->type >= 401 && node->children[i]->type <= 408)) {
@@ -561,9 +572,9 @@ void echo_node(Node* node, int nchildren, int level)
                     node->children[i]->attribute->type);
             }
         } else {
-			echo_node(node->children[i], node->children[i]->nb_children, level + 1);
-		}
-	}
+            echo_node(node->children[i], node->children[i]->nb_children, level + 1);
+        }
+    }
 }
 
 int main(int argc, char* argv[]) 
@@ -578,14 +589,14 @@ int main(int argc, char* argv[])
         exit(-1);
     }
 
-	progname = argv[0];
+    progname = argv[0];
 
-	if (!yyparse()) {
+    if (!yyparse()) {
         printf("OKAY.\n");
         echo_node(syntax_tree, syntax_tree->nb_children, 0);
-	} else {
-	    printf("ERROR.\n");
-	}
+    } else {
+        printf("ERROR.\n");
+    }
     return(0);
 }
 
