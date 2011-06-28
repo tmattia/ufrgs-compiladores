@@ -3,4 +3,5 @@ src/latex
 src/pico
 src/lex.yy.c
 src/y.tab.c
+src/tokens.h
 .DS_Store
