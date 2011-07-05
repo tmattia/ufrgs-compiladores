@@ -10,11 +10,15 @@
   #include "lista.h"
   #include "symbol_table.h"
 
+
+#define MAX_NAME_LENGTH 255
+
 char * novo_tmp();
 
 entry_t* entry_create(char* name, int type);
 int entry_size(int entry_type);
 int entry_desloc(int entry_type);
+char* entry_name(entry_t *entry);
 
 symbol_t *symbol_table;
 
@@ -283,13 +287,17 @@ comando: lvalue '=' expr {
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
 
+
+                entry_t* entry = lookup(*symbol_table, children[0]->attribute->local);
+                if (entry == NULL) {
+                    printf("Error: symbol %s not found in symbol table", children[0]->attribute->local);
+                    exit(1);
+                }
                 struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
-                code->inst = create_inst_tac(children[0]->attribute->local, children[1]->attribute->local, "", "");
+                code->inst = create_inst_tac(entry_name(entry), children[1]->attribute->local, "", "");
                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                 cat_tac(att->code, children[1]->attribute->code);
                 append_inst_tac(att->code, code->inst);
-                // TODO substituir nomes das variaveis por endereco da memoria/deslocamento (precisa olhar na symbol_table)
-
                 $$ = create_node(0, attr_node, NULL, att, 2, children);
             }
        | enunciado { $$ = $1; }
@@ -333,13 +341,21 @@ expr: expr '+' expr {
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
             att->local = novo_tmp();
 
-            struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
-            code->inst = create_inst_tac(att->local, children[0]->attribute->local, "+", children[1]->attribute->local);
+            char *op1 = children[0]->attribute->local;
+            char *op2 = children[1]->attribute->local;
+            entry_t *entry = lookup(*symbol_table, children[0]->attribute->local);
+            if (entry != NULL) op1 = entry_name(entry);
+            entry = lookup(*symbol_table, children[1]->attribute->local);
+            if (entry != NULL) op2 = entry_name(entry);
+
+            struct tac *inst = (struct tac*) malloc(sizeof(struct tac));
+            inst = create_inst_tac(att->local, op1, "+", op2);
+
             att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
             cat_tac(att->code, children[0]->attribute->code);
             cat_tac(att->code, children[1]->attribute->code);
-            append_inst_tac(att->code, code->inst);
-            
+            append_inst_tac(att->code, inst);
+
             $$ = create_node(0, plus_node, NULL, att, 2, children);
         }
     | expr '-' expr {
@@ -350,13 +366,21 @@ expr: expr '+' expr {
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
             att->local = novo_tmp();
 
-            struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
-            code->inst = create_inst_tac(att->local, children[0]->attribute->local, "-", children[1]->attribute->local);
+            char *op1 = children[0]->attribute->local;
+            char *op2 = children[1]->attribute->local;
+            entry_t *entry = lookup(*symbol_table, children[0]->attribute->local);
+            if (entry != NULL) op1 = entry_name(entry);
+            entry = lookup(*symbol_table, children[1]->attribute->local);
+            if (entry != NULL) op2 = entry_name(entry);
+
+            struct tac *inst = (struct tac*) malloc(sizeof(struct tac));
+            inst = create_inst_tac(att->local, op1, "-", op2);
+
             att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
             cat_tac(att->code, children[0]->attribute->code);
             cat_tac(att->code, children[1]->attribute->code);
-            append_inst_tac(att->code, code->inst);
-            
+            append_inst_tac(att->code, inst);
+
             $$ = create_node(0, minus_node, NULL, att, 2, children);
         }
     | expr '*' expr {
@@ -367,12 +391,20 @@ expr: expr '+' expr {
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
             att->local = novo_tmp();
 
-            struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
-            code->inst = create_inst_tac(att->local, children[0]->attribute->local, "*", children[1]->attribute->local);
+            char *op1 = children[0]->attribute->local;
+            char *op2 = children[1]->attribute->local;
+            entry_t *entry = lookup(*symbol_table, children[0]->attribute->local);
+            if (entry != NULL) op1 = entry_name(entry);
+            entry = lookup(*symbol_table, children[1]->attribute->local);
+            if (entry != NULL) op2 = entry_name(entry);
+
+            struct tac *inst = (struct tac*) malloc(sizeof(struct tac));
+            inst = create_inst_tac(att->local, op1, "*", op2);
+
             att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
             cat_tac(att->code, children[0]->attribute->code);
             cat_tac(att->code, children[1]->attribute->code);
-            append_inst_tac(att->code, code->inst);
+            append_inst_tac(att->code, inst);
 
             $$ = create_node(0, mult_node, NULL, att, 2, children);
         }
@@ -384,13 +416,21 @@ expr: expr '+' expr {
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
             att->local = novo_tmp();
 
-            struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
-            code->inst = create_inst_tac(att->local, children[0]->attribute->local, "/", children[1]->attribute->local);
+            char *op1 = children[0]->attribute->local;
+            char *op2 = children[1]->attribute->local;
+            entry_t *entry = lookup(*symbol_table, children[0]->attribute->local);
+            if (entry != NULL) op1 = entry_name(entry);
+            entry = lookup(*symbol_table, children[1]->attribute->local);
+            if (entry != NULL) op2 = entry_name(entry);
+
+            struct tac *inst = (struct tac*) malloc(sizeof(struct tac));
+            inst = create_inst_tac(att->local, op1, "/", op2);
+
             att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
             cat_tac(att->code, children[0]->attribute->code);
             cat_tac(att->code, children[1]->attribute->code);
-            append_inst_tac(att->code, code->inst);
-            
+            append_inst_tac(att->code, inst);
+
             $$ = create_node(0, div_node, NULL, att, 2, children);
         }
     | '(' expr ')' { $$ = $2; }
@@ -402,13 +442,21 @@ expr: expr '+' expr {
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
             att->local = novo_tmp();
 
-            struct node_tac* code = (struct node_tac*) malloc(sizeof(struct node_tac));
-            code->inst = create_inst_tac(att->local, children[0]->attribute->local, "%", children[1]->attribute->local);
+            char *op1 = children[0]->attribute->local;
+            char *op2 = children[1]->attribute->local;
+            entry_t *entry = lookup(*symbol_table, children[0]->attribute->local);
+            if (entry != NULL) op1 = entry_name(entry);
+            entry = lookup(*symbol_table, children[1]->attribute->local);
+            if (entry != NULL) op2 = entry_name(entry);
+
+            struct tac *inst = (struct tac*) malloc(sizeof(struct tac));
+            inst = create_inst_tac(att->local, op1, "%", op2);
+
             att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
             cat_tac(att->code, children[0]->attribute->code);
             cat_tac(att->code, children[1]->attribute->code);
-            append_inst_tac(att->code, code->inst);
-            
+            append_inst_tac(att->code, inst);
+
             $$ = create_node(0, mod_node, NULL, att, 2, children);
         }
     | INT_LIT  {
@@ -568,16 +616,16 @@ extern FILE* yyin;
 int cont = 0;
 char * novo_tmp()
 {
-    char * nome = (char*)malloc(sizeof(char)*256);
-    sprintf(nome,"tmp%d", cont++);
-    return nome;
+    char *name = (char*) malloc(sizeof(char)*MAX_NAME_LENGTH);
+    sprintf(name, "tmp%d", cont++);
+    return name;
 }
 
 
 entry_t* entry_create(char* name, int type)
 {
     entry_t *entry = (entry_t*) malloc(sizeof(entry_t));
-    entry->name = (char*) malloc(sizeof(char) * 256);
+    entry->name = (char*) malloc(sizeof(char) * MAX_NAME_LENGTH);
     strcpy(entry->name, name);
     entry->type = type;
     entry->size = entry_size(type);
@@ -603,6 +651,13 @@ int entry_size(int entry_type)
             size = -1;
     }
     return size;
+}
+
+char* entry_name(entry_t *entry)
+{
+    char *name = malloc(sizeof(char) * MAX_NAME_LENGTH);
+    sprintf(name, "%d(SP)", entry->desloc - entry_size(entry->type));
+    return name;
 }
 
 int desloc = 0;
