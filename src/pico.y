@@ -656,7 +656,7 @@ int entry_size(int entry_type)
 char* entry_name(entry_t *entry)
 {
     char *name = malloc(sizeof(char) * MAX_NAME_LENGTH);
-    sprintf(name, "%d(SP)", entry->desloc - entry_size(entry->type));
+    sprintf(name, "%03d(SP)", entry->desloc - entry_size(entry->type));
     return name;
 }
 
