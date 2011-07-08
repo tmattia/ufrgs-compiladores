@@ -299,6 +299,8 @@ comando: lvalue '=' expr {
                 cat_tac(att->code, children[1]->attribute->code);
                 append_inst_tac(att->code, code->inst);
                 $$ = create_node(0, attr_node, NULL, att, 2, children);
+
+print_tac(stdout, $$->attribute->code[0]);
             }
        | enunciado { $$ = $1; }
        ;
@@ -458,6 +460,8 @@ expr: expr '+' expr {
             append_inst_tac(att->code, inst);
 
             $$ = create_node(0, mod_node, NULL, att, 2, children);
+
+print_tac(stdout, $$->attribute->code[0]);
         }
     | INT_LIT  {
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
@@ -617,7 +621,9 @@ int cont = 0;
 char * novo_tmp()
 {
     char *name = (char*) malloc(sizeof(char)*MAX_NAME_LENGTH);
-    sprintf(name, "tmp%d", cont++);
+    // assumindo que todas variáveis temporárias são inteiros
+    sprintf(name, "%03d(Rx)", cont * entry_size(int_type));
+    cont++;
     return name;
 }
 
