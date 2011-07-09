@@ -14,6 +14,7 @@
 #define MAX_NAME_LENGTH 255
 
 char * novo_tmp();
+char * new_label();
 
 entry_t* entry_create(char* name, int type);
 int entry_size(int entry_type);
@@ -525,8 +526,18 @@ fiminstcontrole: END {
                | ELSE acoes END { $$ = $2; }
                ;
 
-expbool: TRUE { $$ = create_leaf(0, true_node, NULL, NULL); }
-       | FALSE { $$ = create_leaf(0, false_node, NULL, NULL); }
+expbool: TRUE {
+               struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
+               att->local = NULL;
+               att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+               $$ = create_leaf(0, true_node, NULL, att);
+           }
+       | FALSE {
+               struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
+               att->local = NULL;
+               att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+               $$ = create_leaf(0, false_node, NULL, att);
+           }
        | '(' expbool ')' { $$ = $2; }
        | expbool AND expbool {
                 Node** children = (Node**) malloc(sizeof(Node*) * 2);
@@ -538,12 +549,21 @@ expbool: TRUE { $$ = create_leaf(0, true_node, NULL, NULL); }
                 $$ = create_node(0, and_node, NULL, att, 2, children);
             }
        | expbool OR expbool {
+                $1->attribute->falso = new_label();
+                struct tac *inst = (struct tac*) malloc(sizeof(struct tac));
+                inst = create_inst_tac($1->attribute->falso, "", "", "");
+                struct node_tac** label = (struct node_tac**) malloc(sizeof(struct node_tac*));
+                append_inst_tac(label, inst);
+
                 Node** children = (Node**) malloc(sizeof(Node*) * 2);
                 children[0] = $1;
                 children[1] = $3;
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+                cat_tac(att->code, children[0]->attribute->code);
+                cat_tac(att->code, label);
+                cat_tac(att->code, children[1]->attribute->code);
                 $$ = create_node(0, or_node, NULL, att, 2, children);
             }
        | NOT expbool {
@@ -553,7 +573,7 @@ expbool: TRUE { $$ = create_leaf(0, true_node, NULL, NULL); }
                 att->local = NULL;
                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
                 $$ = create_node(0, not_node, NULL, att, 1, children);
-            }
+           }
        | expr '>' expr {
                 Node** children = (Node**) malloc(sizeof(Node*) * 2);
                 children[0] = $1;
@@ -624,6 +644,16 @@ char * novo_tmp()
     // assumindo que todas variáveis temporárias são inteiros
     sprintf(name, "%03d(Rx)", cont * entry_size(int_type));
     cont++;
+    return name;
+}
+
+int cont_label = 0;
+char * new_label()
+{
+    char *name = (char*) malloc(sizeof(char)*MAX_NAME_LENGTH);
+    // assumindo que todas variáveis temporárias são inteiros
+    sprintf(name, "label%d:", cont_label);
+    cont_label++;
     return name;
 }
 

@@ -11,6 +11,8 @@ struct _attr {
     char* local;
     struct node_tac** code;
     int type;
+    char* falso;
+    char* verda;
 } _attr;
 
 #endif
