@@ -105,7 +105,7 @@ code: declaracoes acoes {
             $$ = create_node(0, program_node, NULL, att, 2, children);
             syntax_tree = $$;
         }
-    | acoes { $$ = $1; syntax_tree = $$;  }
+    | acoes { $$ = $1; syntax_tree = $$; }
     ;
 
 declaracoes: declaracao ';' { $$ = $1; }
@@ -268,7 +268,7 @@ listadupla: INT_LIT ':' INT_LIT {
               }
           ;
 
-acoes: comando ';'  { $$ = $1; }
+acoes: comando ';' { $$ = $1; }
      | comando ';' acoes {
              Node** children = (Node**) malloc(sizeof(Node*) * 2);
              children[0] = $1;
@@ -464,14 +464,14 @@ expr: expr '+' expr {
 
 print_tac(stdout, $$->attribute->code[0]);
         }
-    | INT_LIT  {
+    | INT_LIT {
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
             att->local = (char*) malloc((sizeof(char) * strlen($1)) + 1);
             strcpy(att->local, $1);
             att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
             $$ = create_leaf(0, int_node, $1, att);
         }
-    | F_LIT    {
+    | F_LIT {
             struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
             att->local = (char*) malloc((sizeof(char) * strlen($1)) + 1);
             strcpy(att->local, $1);
@@ -530,22 +530,33 @@ expbool: TRUE {
                struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                att->local = NULL;
                att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+			   //att->code = gera_cod("goto" B.t);
                $$ = create_leaf(0, true_node, NULL, att);
            }
        | FALSE {
                struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                att->local = NULL;
                att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+			   //att->code = gera_cod("goto" B.f);
                $$ = create_leaf(0, false_node, NULL, att);
            }
        | '(' expbool ')' { $$ = $2; }
        | expbool AND expbool {
+				$1->attribute->verda = new_label();
+                struct tac *inst = (struct tac*) malloc(sizeof(struct tac));
+                inst = create_inst_tac($1->attribute->verda, "", "", "");
+                struct node_tac** label = (struct node_tac**) malloc(sizeof(struct node_tac*));
+                append_inst_tac(label, inst);
+				
                 Node** children = (Node**) malloc(sizeof(Node*) * 2);
                 children[0] = $1;
                 children[1] = $3;
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+				cat_tac(att->code, children[0]->attribute->code);
+                cat_tac(att->code, label);
+                cat_tac(att->code, children[1]->attribute->code);
                 $$ = create_node(0, and_node, NULL, att, 2, children);
             }
        | expbool OR expbool {
@@ -581,6 +592,9 @@ expbool: TRUE {
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+				cat_tac(att->code, children[0]->attribute->code);
+				cat_tac(att->code, children[1]->attribute->code);
+				//concatenar com gera_cod("if" children[0]->attribute->local ">" children[1]->attribute->local "goto" B.t))||gera_cod("goto" B.f)
                 $$ = create_node(0, sup_node, NULL, att, 2, children);
             }
        | expr '<' expr {
@@ -590,6 +604,9 @@ expbool: TRUE {
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+				cat_tac(att->code, children[0]->attribute->code);
+				cat_tac(att->code, children[1]->attribute->code);
+				//concatenar com gera_cod("if" children[0]->attribute->local "<" children[1]->attribute->local "goto" B.t))||gera_cod("goto" B.f)
                 $$ = create_node(0, inf_node, NULL, att, 2, children);
             }
        | expr LE expr {
@@ -599,6 +616,9 @@ expbool: TRUE {
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+				cat_tac(att->code, children[0]->attribute->code);
+				cat_tac(att->code, children[1]->attribute->code);
+				//concatenar com gera_cod("if" children[0]->attribute->local "LE" children[1]->attribute->local "goto" B.t))||gera_cod("goto" B.f)
                 $$ = create_node(0, inf_eq_node, NULL, att, 2, children);
             }
        | expr GE expr {
@@ -608,6 +628,9 @@ expbool: TRUE {
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+				cat_tac(att->code, children[0]->attribute->code);
+				cat_tac(att->code, children[1]->attribute->code);
+				//concatenar com gera_cod("if" children[0]->attribute->local "GE" children[1]->attribute->local "goto" B.t))||gera_cod("goto" B.f)
                 $$ = create_node(0, sup_eq_node, NULL, att, 2, children);
             }
        | expr EQ expr {
@@ -617,6 +640,9 @@ expbool: TRUE {
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+				cat_tac(att->code, children[0]->attribute->code);
+				cat_tac(att->code, children[1]->attribute->code);
+				//concatenar com gera_cod("if" children[0]->attribute->local "EQ" children[1]->attribute->local "goto" B.t))||gera_cod("goto" B.f)
                 $$ = create_node(0, eq_node, NULL, att, 2, children);
             }
        | expr NE expr {
@@ -626,6 +652,9 @@ expbool: TRUE {
                 struct _attr* att = (struct _attr*) malloc(sizeof(struct _attr));
                 att->local = NULL;
                 att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
+				cat_tac(att->code, children[0]->attribute->code);
+				cat_tac(att->code, children[1]->attribute->code);
+				//concatenar com gera_cod("if" children[0]->attribute->local "NE" children[1]->attribute->local "goto" B.t))||gera_cod("goto" B.f)
                 $$ = create_node(0, neq_node, NULL, att, 2, children);
             }
        ;
@@ -733,7 +762,7 @@ void echo_node(Node* node, int nchildren, int level)
     }
 }
 
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
     if (argc != 2) {
         printf("uso: %s <input_file>. Try again!\n", argv[0]);
