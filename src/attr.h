@@ -10,6 +10,7 @@
 struct _attr {
     char* local;
     struct node_tac** code;
+	char *label;
     int type;
     char* falso;
     char* verda;

@@ -77,6 +77,7 @@ typedef struct _node {
    int id;         /**< rótulo do nó. Cada nó deve ter um 'id' distinto. */
    char* lexeme;   /**< irrelevante por enquanto. */
 
+
    Node_type type; /**< Um dos valores definidos acima pelos # defines. */
    struct _attr *attribute;/**< Qualquer coisa por enquanto. */
    /* Fim das informacoes armazenadas em cada no.

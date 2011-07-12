@@ -1,6 +1,7 @@
 a,b:int;
 a := 1;
 b := 2;
-if ( true || false ) then
+if ( (false || false) && (true || false ) ) then
     a := 0;
 end;
+	b := 34;

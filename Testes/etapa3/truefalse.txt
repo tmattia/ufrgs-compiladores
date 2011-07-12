@@ -1,0 +1,6 @@
+a:int;
+if (true && false) then
+	a := 1;
+else
+	a := 2;
+end;

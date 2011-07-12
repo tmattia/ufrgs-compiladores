@@ -1,0 +1,8 @@
+a,b:int;
+a := 1;
+b := 3;
+if((1 > 2) && (a < b)) then 
+	a := 0;
+else
+	a := 2;
+end;
