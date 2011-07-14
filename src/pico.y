@@ -548,11 +548,12 @@ enunciado: expr { $$ = $1; }
                  $3->attribute->verda = verda;
                  $3->attribute->falso = falso;
 
-                 append_inst_tac(att->code, create_inst_tac(loop, "WHILE ", "",""));
+                 append_inst_tac(att->code, create_inst_tac(loop, "", "",""));
                  eval($3);
                  cat_tac(att->code, $3->attribute->code);
+                 append_inst_tac(att->code, create_inst_tac(verda, "", "", ""));
                  cat_tac(att->code, $6->attribute->code);
-                 append_inst_tac(att->code, create_inst_tac("", "GOTO ", loop, ""));
+                 append_inst_tac(att->code, create_inst_tac("", "GOTO", loop, ""));
                  append_inst_tac(att->code, create_inst_tac(falso, "", "", ""));
                  Node** children = (Node**) malloc(sizeof(Node*) * 2);
                  children[0] = $3;
@@ -578,7 +579,7 @@ fiminstcontrole: END {
                att->local = NULL;
                att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
 
-               append_inst_tac(att->code, create_inst_tac("", "GOTO ", else_label, ""));
+               append_inst_tac(att->code, create_inst_tac("", "GOTO", else_label, ""));
                append_inst_tac(att->code, create_inst_tac(att->label,"","",""));
                cat_tac(att->code, $2->attribute->code);
                append_inst_tac(att->code, create_inst_tac(else_label,"","",""));

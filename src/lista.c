@@ -38,8 +38,19 @@ struct tac* create_inst_tac(const char* res, const char* arg1,
  * \param[in] i instrução a ser escrita
  * \return nada
  */
+int instructions_printed = 0;
 void print_inst_tac(FILE* out, struct tac i) {
-   fprintf(out, "%s\t:= %s %s %s\n", i.res, i.arg1, i.op, i.arg2);
+    if (strcmp(i.res, "") != 0) {
+        if (strcmp(i.arg1, "") != 0) {
+            fprintf(out, "%03d:   %s := %s %s %s\n", instructions_printed, i.res, i.arg1, i.op, i.arg2);
+            instructions_printed++;
+        } else {
+            fprintf(out, "%s:\n", i.res);
+        }
+    } else {
+        fprintf(out, "%03d:   %s %s %s\n", instructions_printed, i.arg1, i.op, i.arg2);
+        instructions_printed++;
+    }
 }
 
 /** \param[out] out arquivo de destino
