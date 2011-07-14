@@ -366,7 +366,7 @@ expr: expr '+' expr {
             if (entry != NULL) op2 = entry_name(entry);
 
             struct tac *inst = (struct tac*) malloc(sizeof(struct tac));
-            inst = create_inst_tac(att->local, op1, "+", op2);
+            inst = create_inst_tac(att->local, op1, "ADD", op2);
 
             att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
             cat_tac(att->code, children[0]->attribute->code);
@@ -391,7 +391,7 @@ expr: expr '+' expr {
             if (entry != NULL) op2 = entry_name(entry);
 
             struct tac *inst = (struct tac*) malloc(sizeof(struct tac));
-            inst = create_inst_tac(att->local, op1, "-", op2);
+            inst = create_inst_tac(att->local, op1, "SUB", op2);
 
             att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
             cat_tac(att->code, children[0]->attribute->code);
@@ -416,7 +416,7 @@ expr: expr '+' expr {
             if (entry != NULL) op2 = entry_name(entry);
 
             struct tac *inst = (struct tac*) malloc(sizeof(struct tac));
-            inst = create_inst_tac(att->local, op1, "*", op2);
+            inst = create_inst_tac(att->local, op1, "MUL", op2);
 
             att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
             cat_tac(att->code, children[0]->attribute->code);
@@ -441,7 +441,7 @@ expr: expr '+' expr {
             if (entry != NULL) op2 = entry_name(entry);
 
             struct tac *inst = (struct tac*) malloc(sizeof(struct tac));
-            inst = create_inst_tac(att->local, op1, "/", op2);
+            inst = create_inst_tac(att->local, op1, "DIV", op2);
 
             att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
             cat_tac(att->code, children[0]->attribute->code);
@@ -467,7 +467,7 @@ expr: expr '+' expr {
             if (entry != NULL) op2 = entry_name(entry);
 
             struct tac *inst = (struct tac*) malloc(sizeof(struct tac));
-            inst = create_inst_tac(att->local, op1, "%", op2);
+            inst = create_inst_tac(att->local, op1, "MOD", op2);
 
             att->code = (struct node_tac**) malloc(sizeof(struct node_tac*));
             cat_tac(att->code, children[0]->attribute->code);
@@ -914,7 +914,7 @@ int main(int argc, char* argv[])
     progname = argv[0];
 
     if (!yyparse()) {
-        printf("OKAY.\n");
+        //printf("OKAY.\n");
         print_tac(stdout, syntax_tree->attribute->code[0]);
         //echo_node(syntax_tree, syntax_tree->nb_children, 0);
     } else {
